@@ -82,7 +82,7 @@ func main() {
 		fmt.Printf("%s\n", cmd.Root().Version)
 	}
 
-	app := &cli.Command{
+	cmd := &cli.Command{
 		Usage:   "Golang Build Tool",
 		Version: "v2.10",
 		Flags:   flags,
@@ -116,7 +116,7 @@ func main() {
 		},
 	}
 
-	err := app.Run(context.Background(), os.Args)
+	err := cmd.Run(context.Background(), os.Args)
 	if err != nil {
 		log.Fatal(err)
 	}
