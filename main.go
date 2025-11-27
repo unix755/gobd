@@ -1,102 +1,104 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"github.com/urfave/cli/v2"
 	"gobd/internal/build"
 	"log"
 	"os"
+
+	"github.com/urfave/cli/v3"
 )
 
 func main() {
-	var build_all bool
-	var build_main bool
-	var build_no_debug bool
-	var build_no_cgo bool
-	var build_os string
-	var build_arch string
-	var build_output_directory string
-	var build_output_name string
-	var build_opts cli.StringSlice
-	var build_envs cli.StringSlice
+	var buildAll bool
+	var buildMain bool
+	var buildNoDebug bool
+	var buildNoCgo bool
+	var buildOs string
+	var buildArch string
+	var buildOutputDirectory string
+	var buildOutputName string
+	var buildOpts []string
+	var buildEnvs []string
 
 	flags := []cli.Flag{
 		&cli.BoolFlag{
 			Name:        "all",
 			Usage:       "set build all supported os and architecture",
-			Destination: &build_all,
+			Destination: &buildAll,
 		},
 		&cli.BoolFlag{
 			Name:        "main",
 			Usage:       "set build all supported architecture for windows, macos, linux and freebsd",
-			Destination: &build_main,
+			Destination: &buildMain,
 		},
 		&cli.StringFlag{
 			Name:        "os",
 			Usage:       "set build operating system",
-			Destination: &build_os,
+			Destination: &buildOs,
 		},
 		&cli.StringFlag{
 			Name:        "arch",
 			Usage:       "set build architecture",
-			Destination: &build_arch,
+			Destination: &buildArch,
 		},
 		&cli.StringFlag{
 			Name:        "name",
 			Aliases:     []string{"n"},
 			Usage:       "set build output name",
-			Destination: &build_output_name,
+			Destination: &buildOutputName,
 		},
 		&cli.StringFlag{
 			Name:        "dir",
 			Aliases:     []string{"d"},
 			Usage:       "set build output directory",
-			Destination: &build_output_directory,
+			Destination: &buildOutputDirectory,
 		},
 		&cli.BoolFlag{
 			Name:        "no_debug",
 			Usage:       "set build not using debug options to reduce compile size",
-			Destination: &build_no_debug,
+			Destination: &buildNoDebug,
 		},
 		&cli.BoolFlag{
 			Name:        "no_cgo",
 			Usage:       "set build not using cgo to avoid relying on the host operating system's native libraries",
-			Destination: &build_no_cgo,
+			Destination: &buildNoCgo,
 		},
 		&cli.StringSliceFlag{
 			Name:        "opts",
 			Usage:       "set build opts",
-			Destination: &build_opts,
+			Destination: &buildOpts,
 		},
 		&cli.StringSliceFlag{
 			Name:        "envs",
 			Usage:       "set build envs",
-			Destination: &build_envs,
+			Destination: &buildEnvs,
 		},
 	}
 
 	// 打印版本函数
-	cli.VersionPrinter = func(cCtx *cli.Context) {
-		fmt.Printf("%s", cCtx.App.Version)
+	cli.VersionPrinter = func(cmd *cli.Command) {
+		fmt.Printf("%s\n", cmd.Root().Version)
 	}
 
-	app := &cli.App{
+	app := &cli.Command{
 		Usage:   "Golang Build Tool",
-		Version: "v2.00",
+		Version: "v2.10",
 		Flags:   flags,
-		Action: func(ctx *cli.Context) (err error) {
+		Action: func(ctx context.Context, cmd *cli.Command) (err error) {
 			var ps []build.Pair
 
 			// 获取编译的操作系统/处理器架构对
-			if build_main {
+			if buildMain {
 				ps = build.GetMainPairs()
-			} else if build_all {
+			} else if buildAll {
 				ps, err = build.GetAllPairs()
 				if err != nil {
 					return err
 				}
 			} else {
-				ps = build.GetSelectedPairs(build_os, build_arch)
+				ps = build.GetSelectedPairs(buildOs, buildArch)
 			}
 			// 获取不到操作系统/处理器架构对则返回错误
 			if len(ps) == 0 {
@@ -105,7 +107,7 @@ func main() {
 
 			// 遍历操作系统/处理器架构对进行编译
 			for _, p := range ps {
-				err = build.Build(p.OS, p.ARCH, build_output_name, build_output_directory, build_no_debug, build_no_cgo, build_opts.Value(), build_envs.Value())
+				err = build.Build(p.OS, p.ARCH, buildOutputName, buildOutputDirectory, buildNoDebug, buildNoCgo, buildOpts, buildEnvs)
 				if err != nil {
 					log.Println(err)
 				}
@@ -114,7 +116,7 @@ func main() {
 		},
 	}
 
-	err := app.Run(os.Args)
+	err := app.Run(context.Background(), os.Args)
 	if err != nil {
 		log.Fatal(err)
 	}

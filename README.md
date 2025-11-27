@@ -25,11 +25,11 @@ gobd -main -d bin -no_debug -no_cgo
 
 ```sh
 # system is linux(debian,redhat linux,ubuntu,fedora...) and arch is amd64
-curl -Lo /usr/local/bin/gobd https://github.com/gek64/gobd/releases/latest/download/gobd-linux-amd64
+curl -Lo /usr/local/bin/gobd https://github.com/unix755/gobd/releases/latest/download/gobd-linux-amd64
 chmod +x /usr/local/bin/gobd
 
 # system is freebsd and arch is amd64
-curl -Lo /usr/local/bin/gobd https://github.com/gek64/gobd/releases/latest/download/gobd-freebsd-amd64
+curl -Lo /usr/local/bin/gobd https://github.com/unix755/gobd/releases/latest/download/gobd-freebsd-amd64
 chmod +x /usr/local/bin/gobd
 ```
 
@@ -38,7 +38,7 @@ chmod +x /usr/local/bin/gobd
 ### How to compile if prebuilt binaries are not found
 
 ```sh
-git clone https://github.com/gek64/gobd.git
+git clone https://github.com/unix755/gobd.git
 cd gobd
 export CGO_ENABLED=0 
 go build -trimpath -ldflags "-s -w"

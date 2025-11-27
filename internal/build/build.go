@@ -2,10 +2,11 @@ package build
 
 import (
 	"fmt"
-	"github.com/gek64/gek/gExec"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/unix755/xtools/xExec"
 )
 
 // GetName 获取编译后的静态文件名,customName为自定义名称(可为空)
@@ -31,7 +32,7 @@ func GetName(targetOS string, targetARCH string, customName string) (name string
 
 // CleanCache 清除编译缓存
 func CleanCache() (err error) {
-	return gExec.Run(exec.Command("go", "clean", "-cache"))
+	return xExec.Run(exec.Command("go", "clean", "-cache"))
 }
 
 // Build 编译
@@ -70,5 +71,5 @@ func Build(targetOS string, targetARCH string, name string, dir string, noDebug 
 
 	cmd := exec.Command("go", args...)
 	cmd.Env = append(os.Environ(), envs...)
-	return gExec.Run(cmd)
+	return xExec.Run(cmd)
 }
