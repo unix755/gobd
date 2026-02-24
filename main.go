@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"gobd/internal/build"
+	"gobd/internal"
 	"log"
 	"os"
 
@@ -87,18 +87,18 @@ func main() {
 		Version: "v2.10",
 		Flags:   flags,
 		Action: func(ctx context.Context, cmd *cli.Command) (err error) {
-			var ps []build.Pair
+			var ps []internal.Pair
 
 			// 获取编译的操作系统/处理器架构对
 			if buildMain {
-				ps = build.GetMainPairs()
+				ps = internal.GetMainPairs()
 			} else if buildAll {
-				ps, err = build.GetAllPairs()
+				ps, err = internal.GetAllPairs()
 				if err != nil {
 					return err
 				}
 			} else {
-				ps = build.GetSelectedPairs(buildOs, buildArch)
+				ps = internal.GetSelectedPairs(buildOs, buildArch)
 			}
 			// 获取不到操作系统/处理器架构对则返回错误
 			if len(ps) == 0 {
@@ -107,7 +107,7 @@ func main() {
 
 			// 遍历操作系统/处理器架构对进行编译
 			for _, p := range ps {
-				err = build.Build(p.OS, p.ARCH, buildOutputName, buildOutputDirectory, buildNoDebug, buildNoCgo, buildOpts, buildEnvs)
+				err = internal.Build(p.OS, p.ARCH, buildOutputName, buildOutputDirectory, buildNoDebug, buildNoCgo, buildOpts, buildEnvs)
 				if err != nil {
 					log.Println(err)
 				}
